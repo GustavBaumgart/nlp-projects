@@ -53,8 +53,8 @@ def add_tags(rules):
     return new_rules
 
 
-# returns a list of POS and non-POS
-def separate_unit_prod(rules):
+# returns a list of POS and non-POS rules
+def separate_POS(rules):
     POS = []
     non_POS = []
 
@@ -80,7 +80,7 @@ def incomplete(state):
 def set_up_earley(n):
     table = []
 
-    for i in range(len(n+1)):
+    for i in range(n+1):
         table.append([])
 
     return table
