@@ -25,13 +25,17 @@ def get_cfg(filename):
 
     for line in fp:
 
-        templist = line.split(" ")
+        templist = line.split()
+
+        if templist[0] == "#":
+            templist = []
 
         for element in templist:
             if element.isalpha() == False:
                 templist.remove(element)
 
-        rules.append(templist)
+        if templist != []:
+            rules.append(templist)
 
     fp.close()
 
@@ -49,22 +53,27 @@ def add_tags(rules):
     return new_rules
 
 
-# returns a list of unit productions, and a list of non-unit productions
+# returns a list of POS and non-POS
 def separate_unit_prod(rules):
-    unit_prod = []
-    non_unit_prod = []
+    POS = []
+    non_POS = []
 
-    # TODO: add code to separate unit productions and non-unit productions
+    for rule in rules:
+        if len(rule) == 2 and rule[1].islower() == True:
+            POS.append(rule)
+        else:
+            non_POS.append(rule)
 
-    return (unit_prod, non_unit_prod)
+    return (POS, non_POS)
 
 
 # returns True if progress on rule is complete, False otherwise
 def incomplete(state):
 
-    # TODO: add logic to check for progress on rule within state
+    if state[0][-1] == ".":
+        return True
 
-    return True
+    return False
 
 
 # sets up chart as a list of lists
