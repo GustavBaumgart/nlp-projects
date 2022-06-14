@@ -140,7 +140,7 @@ def main():
     # get the rules and separate them
     original_rules = get_cfg(sys.argv[1])
     new_rules = add_tags(original_rules)
-    sep_rules = separate_unit_prod(new_rules)
+    sep_rules = separate_POS(new_rules)
 
     # perform algorithm
     mod_trees = earley(sys.argv[2].split(), sep_rules)
