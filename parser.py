@@ -24,18 +24,13 @@ def get_cfg(filename):
     fp = open(filename)
 
     for line in fp:
+        
+        if line[0] == '#':
+            continue
 
-        templist = line.split()
+        templist = line.strip().split()
 
-        if templist[0] == "#":
-            templist = []
-
-        for element in templist:
-            if element.isalpha() == False:
-                templist.remove(element)
-
-        if templist != []:
-            rules.append(templist)
+        rules.append(templist[:1]+templist[2:])
 
     fp.close()
 
