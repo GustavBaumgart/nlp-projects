@@ -64,11 +64,8 @@ def separate_POS(rules):
 
 # returns True if progress on rule is complete, False otherwise
 def incomplete(state):
-
-    if state[0][-1] == ".":
-        return True
-
-    return False
+    
+    return state[0][-1] == "."
 
 
 # sets up chart as a list of lists
