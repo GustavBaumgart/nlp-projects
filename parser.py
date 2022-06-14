@@ -8,6 +8,7 @@
 
 # imports
 from nltk.tree import Tree
+from copy import deepcopy
 import sys
 
 # keeps the count for the number of variables created
