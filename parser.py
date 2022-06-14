@@ -78,6 +78,11 @@ def set_up_earley(n):
 
     return table
 
+# adds state to specific chart entry
+def enqueue(state, chart, chart_entry):
+    if state not in chart[chart_entry]:
+        chart[chart_entry].append(state)
+
 
 # adds possible rules to chart to be evaluated later
 def predictor(state, sep_rules, chart):
