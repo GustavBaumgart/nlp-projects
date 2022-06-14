@@ -87,7 +87,7 @@ def enqueue(state, chart, chart_entry):
 # adds possible rules to chart to be evaluated later
 def predictor(state, sep_rules, chart):
 
-    # TODO: implement completer
+    # TODO: implement predictor
 
     pass
 
@@ -113,6 +113,14 @@ def completer(state, sep_rules, chart):
 # words is a list of string, each a word passed in
 # sep_rules is two lists of lists (unit_prod, non_unit_prod)
 # returns list of trees starting at S
+# a state is represented as a tuple with three subcomponents
+# (rule with progress marked, 
+# (start pos of rule wrt terminals, period pos of rule wrt terminals), 
+# working progress on a nltk.tree)
+# example: 
+# ( ['S', 'A', '.', 'B'] , (0,1) , Tree('S', [Tree('A', ['word'])]) )
+# notice there is no 'B' branch yet because the period marks the progress
+# which has not passed 'B'
 def earley(words, sep_rules):
 
     # TODO: implement Earley parser
