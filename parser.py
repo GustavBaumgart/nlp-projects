@@ -54,7 +54,7 @@ def separate_POS(rules):
     non_POS = []
 
     for rule in rules:
-        if len(rule) == 2 and rule[1].islower() == True:
+        if len(rule) == 2 and rule[1].islower():
             POS.append(rule)
         else:
             non_POS.append(rule)
