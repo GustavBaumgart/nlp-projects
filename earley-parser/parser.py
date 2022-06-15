@@ -93,11 +93,20 @@ def predictor(state, sep_rules, chart):
 
 
 # scans unit productions for rules that apply to the category in question
-def scanner(state, sep_rules, chart):
-
-    # TODO: implement scanner
-
-    pass
+def scanner(state, sep_rules, chart, words):
+    # unpack state
+    curr_rule, curr_span, curr_tree = state
+    i, j = curr_span
+    
+    # get POS rules
+    POS = sep_rules[0]
+    
+    # add POS rule if exists
+    for rule in POS:
+        if rule[0] == curr_rule[curr_rule.index('.')+1] and rule[1] == words[j]:
+            temp_state = (rule.copy()+['.'], (j, j+1), Tree(rule[0], [rule[1]]))
+            enqueue(temp_state, chart, j+1)
+            return
 
 
 # goes through the chart to check for states that could be updated with new
