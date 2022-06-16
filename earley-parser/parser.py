@@ -41,10 +41,32 @@ def get_cfg(filename):
 # Add PoS tags wherever needed in order to satisfy the property where terminal
 # states are always produced by a PoS tag that only leads to them
 def add_X(rules):
-    global counter
+    
+    counter = 0
+    
     new_rules = []
 
-    # TODO: add code to add PoS tags whenever needed
+    for rule in rules:
+        temp_rule = rule.copy()
+        
+        if len(rule) == 2:
+            # add POS rule or unit production
+            new_rules.append(rule)
+            
+        else:
+            # check for terminals
+            for element in rule:
+                if element.islower():
+                    temp_index = rule.index(element)
+                    temp_rule[temp_index] = "X" + str(counter)
+                    
+                    # add new rule
+                    new_rules.append(["X" + str(counter), element])
+                    
+                    counter += 1
+            
+            # add modified rule
+            new_rules.append(temp_rule)
 
     return new_rules
 
@@ -78,6 +100,7 @@ def set_up_earley(n):
 
     return table
 
+
 # adds state to specific chart entry
 def enqueue(state, chart, chart_entry):
     if state not in chart[chart_entry]:
@@ -94,12 +117,13 @@ def predictor(state, sep_rules, chart):
     # get non_POS rules
     non_POS = sep_rules[1]
 
+    # enqueues possible states needed to complete state passed in
     for rule in non_POS:
         if curr_rule[curr_rule.index(".")+1] == rule:
             temp_rule = rule.copy()
             temp_rule.insert(1,".")
 
-            enqueue(temp_rule, (j,j), Tree(rule[0],[])), chart, j)
+            enqueue((temp_rule, (j,j), Tree(rule[0],[])), chart, j)
 
 
 # scans unit productions for rules that apply to the category in question
@@ -163,6 +187,8 @@ def earley(words, sep_rules):
         index = 0
 
         while index < len(chart[i]):
+            state = chart[i][index]
+            
             if incomplete(state) and state[0][state[0].index('.')+1] not in map(lambda x: x[0], sep_rules[0]):
                 predictor(state, sep_rules, chart)
             elif incomplete(state) and state[0][state[0].index('.')+1] in map(lambda x: x[0], sep_rules[0]):
@@ -170,9 +196,9 @@ def earley(words, sep_rules):
             else:
                 completer(state, sep_rules, chart)
 
-            index++
+            index += 1
 
-    return [state[2] if not incomplete(state) and state[0][0] == 'S' for state in chart[-1]]
+    return [state[2] for state in chart[-1] if(not incomplete(state) and state[0][0] == 'S')]
 
 
 # removes nodes artificially added (such as X0, X1, ...)
@@ -186,9 +212,8 @@ def remove_X(tree):
 # prints trees passed in as a list or display via another method
 def display_trees(trees):
 
-    # TODO: add a way to visualize trees
-
-    pass
+    for tree in trees:
+        tree.draw()
 
 
 def main():
