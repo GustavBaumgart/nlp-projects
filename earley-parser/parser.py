@@ -99,7 +99,7 @@ def predictor(state, sep_rules, chart):
             temp_rule = rule.copy()
             temp_rule.insert(1,".")
 
-            enqueue(temp_rule, (j,j), Tree(rule[0],[])), chart, j)
+            enqueue((temp_rule, (j,j), Tree(rule[0],[])), chart, j)
 
 
 # scans unit productions for rules that apply to the category in question
@@ -163,6 +163,8 @@ def earley(words, sep_rules):
         index = 0
 
         while index < len(chart[i]):
+            state = chart[i][index]
+            
             if incomplete(state) and state[0][state[0].index('.')+1] not in map(lambda x: x[0], sep_rules[0]):
                 predictor(state, sep_rules, chart)
             elif incomplete(state) and state[0][state[0].index('.')+1] in map(lambda x: x[0], sep_rules[0]):
@@ -170,9 +172,9 @@ def earley(words, sep_rules):
             else:
                 completer(state, sep_rules, chart)
 
-            index++
+            index += 1
 
-    return [state[2] if not incomplete(state) and state[0][0] == 'S' for state in chart[-1]]
+    return [state[2] for state in chart[-1] if(not incomplete(state) and state[0][0] == 'S')]
 
 
 # removes nodes artificially added (such as X0, X1, ...)
