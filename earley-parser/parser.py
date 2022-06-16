@@ -25,7 +25,7 @@ def get_cfg(filename):
     fp = open(filename)
 
     for line in fp:
-        
+
         if line[0] == '#':
             continue
 
@@ -65,7 +65,7 @@ def separate_POS(rules):
 
 # returns True if progress on rule is complete, False otherwise
 def incomplete(state):
-    
+
     return state[0][-1] == "."
 
 
@@ -87,9 +87,19 @@ def enqueue(state, chart, chart_entry):
 # adds possible rules to chart to be evaluated later
 def predictor(state, sep_rules, chart):
 
-    # TODO: implement predictor
+    # unpack state
+    curr_rule, curr_span, curr_tree = state
+    i, j = curr_span
 
-    pass
+    # get non_POS rules
+    non_POS = sep_rules[1]
+
+    for rule in non_POS:
+        if curr_rule[curr_rule.index(".")+1] == rule:
+            temp_rule = rule.copy()
+            temp_rule.insert(1,".")
+
+            enqueue(temp_rule,(j,j), Tree(rule[0],[])), chart, j)
 
 
 # scans unit productions for rules that apply to the category in question
@@ -111,21 +121,36 @@ def completer(state, sep_rules, chart):
 
 # performs modified Earley algorithm
 # words is a list of string, each a word passed in
-# sep_rules is two lists of lists (unit_prod, non_unit_prod)
+# sep_rules is two lists of lists (POS, non_POS)
 # returns list of trees starting at S
 # a state is represented as a tuple with three subcomponents
-# (rule with progress marked, 
-# (start pos of rule wrt terminals, period pos of rule wrt terminals), 
+# (rule with progress marked,
+# (start pos of rule wrt terminals, period pos of rule wrt terminals),
 # working progress on a nltk.tree)
-# example: 
+# example:
 # ( ['S', 'A', '.', 'B'] , (0,1) , Tree('S', [Tree('A', ['word'])]) )
 # notice there is no 'B' branch yet because the period marks the progress
 # which has not passed 'B'
 def earley(words, sep_rules):
 
-    # TODO: implement Earley parser
+    chart = set_up_earley(len(words))
 
-    return []
+    enqueue((["Gamma", ".", "S"], (0, 0), Tree("Gamma",[])), chart, 0)
+
+    for i in range(len(words)):
+        index = 0
+
+        while index < len(chart[i]):
+            if incomplete(state) and state[0][state[0].index('.')+1] not in map(lambda x: x[0], sep_rules[0]):
+                predictor(state, sep_rules, chart)
+            elif incomplete(state) and state[0][state[0].index('.')+1] in map(lambda x: x[0], sep_rules[0]):
+                scanner(state, sep_rules, chart)
+            else:
+                completer(state, sep_rules, chart)
+
+            index++
+
+    return [state[2] if not incomplete(state) and state[0][0] == 'S' for state in chart[-1]]
 
 
 # removes nodes artificially added (such as X0, X1, ...)
