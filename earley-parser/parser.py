@@ -166,7 +166,7 @@ def earley(words, sep_rules):
             if incomplete(state) and state[0][state[0].index('.')+1] not in map(lambda x: x[0], sep_rules[0]):
                 predictor(state, sep_rules, chart)
             elif incomplete(state) and state[0][state[0].index('.')+1] in map(lambda x: x[0], sep_rules[0]):
-                scanner(state, sep_rules, chart)
+                scanner(state, sep_rules, chart, words)
             else:
                 completer(state, sep_rules, chart)
 
