@@ -177,10 +177,22 @@ def earley(words, sep_rules):
 
 # removes nodes artificially added (such as X0, X1, ...)
 def remove_X(tree):
+    
+    # base case
+    if isinstance(tree, str):
+        return tree
+    
+    # create new list of children
+    new_children = []
+    
+    if tree.children:
+        for child in tree.children:
+            if isinstance(child, Tree) and child.label[0] == 'X':
+                new_children.append(child.children[0])
+            else:
+                new_children.append(remove_X(child))
 
-    # TODO: implement recursive algorithm to remove nodes that start with X
-
-    return tree
+    return Tree(tree.label, new_children)
 
 
 # prints trees passed in as a list or display via another method
