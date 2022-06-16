@@ -185,13 +185,16 @@ def remove_X(tree):
     # create new list of children
     new_children = []
     
+    # modify children as needed
     if tree.children:
         for child in tree.children:
             if isinstance(child, Tree) and child.label[0] == 'X':
+                # already at lowest level, no need to recurse
                 new_children.append(child.children[0])
             else:
+                # recurse to lower levels
                 new_children.append(remove_X(child))
-
+    
     return Tree(tree.label, new_children)
 
 
