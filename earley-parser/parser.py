@@ -66,7 +66,7 @@ def separate_POS(rules):
 # returns True if progress on rule is complete, False otherwise
 def incomplete(state):
 
-    return state[0][-1] == "."
+    return state[0][-1] != "."
 
 
 # sets up chart as a list of lists
@@ -99,7 +99,7 @@ def predictor(state, sep_rules, chart):
             temp_rule = rule.copy()
             temp_rule.insert(1,".")
 
-            enqueue(temp_rule,(j,j), Tree(rule[0],[])), chart, j)
+            enqueue(temp_rule, (j,j), Tree(rule[0],[])), chart, j)
 
 
 # scans unit productions for rules that apply to the category in question
@@ -107,10 +107,10 @@ def scanner(state, sep_rules, chart, words):
     # unpack state
     curr_rule, curr_span, curr_tree = state
     i, j = curr_span
-    
+
     # get POS rules
     POS = sep_rules[0]
-    
+
     # add POS rule if exists
     for rule in POS:
         if rule[0] == curr_rule[curr_rule.index('.')+1] and rule[1] == words[j]:
@@ -125,17 +125,17 @@ def completer(state, sep_rules, chart):
     # unpack state
     curr_rule, curr_span, curr_tree = state
     j, k = curr_span
-    
-    
+
+
     # check for states to 'complete'
     for state in chart[j]:
         if incomplete(state) and state[0][state[0].index['.']+1] == curr_rule[0]:
             # move period tracking progress up one
             new_rule = state[0][:state[0].index['.']] + [state[0][state[0].index['.']+1], '.'] + state[0][state[0].index['.']+2:]
-            
+
             # edit tree to include progress from completed state
             new_tree = Tree(state[2].label, deepcopy(state[2].children) + [deepcopy(curr_tree)])
-            
+
             # build and add state
             temp_state = (new_rule, (state[1][0], k), new_tree)
             enqueue(temp_state, chart, k)
