@@ -41,10 +41,32 @@ def get_cfg(filename):
 # Add PoS tags wherever needed in order to satisfy the property where terminal
 # states are always produced by a PoS tag that only leads to them
 def add_X(rules):
-    global counter
+    
+    counter = 0
+    
     new_rules = []
 
-    # TODO: add code to add PoS tags whenever needed
+    for rule in rules:
+        temp_rule = rule.copy()
+        
+        if len(rule) == 2:
+            # add POS rule or unit production
+            new_rules.append(rule)
+            
+        else:
+            # check for terminals
+            for element in rule:
+                if element.islower():
+                    temp_index = rule.index(element)
+                    temp_rule[temp_index] = "X" + str(counter)
+                    
+                    # add new rule
+                    new_rules.append(["X" + str(counter), element])
+                    
+                    counter += 1
+            
+            # add modified rule
+            new_rules.append(temp_rule)
 
     return new_rules
 
@@ -78,6 +100,7 @@ def set_up_earley(n):
 
     return table
 
+
 # adds state to specific chart entry
 def enqueue(state, chart, chart_entry):
     if state not in chart[chart_entry]:
@@ -94,6 +117,7 @@ def predictor(state, sep_rules, chart):
     # get non_POS rules
     non_POS = sep_rules[1]
 
+    # enqueues possible states needed to complete state passed in
     for rule in non_POS:
         if curr_rule[curr_rule.index(".")+1] == rule:
             temp_rule = rule.copy()
