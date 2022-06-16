@@ -212,9 +212,8 @@ def remove_X(tree):
 # prints trees passed in as a list or display via another method
 def display_trees(trees):
 
-    # TODO: add a way to visualize trees
-
-    pass
+    for tree in trees:
+        tree.draw()
 
 
 def main():
