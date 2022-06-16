@@ -40,7 +40,7 @@ def get_cfg(filename):
 
 # Add PoS tags wherever needed in order to satisfy the property where terminal
 # states are always produced by a PoS tag that only leads to them
-def add_tags(rules):
+def add_X(rules):
     global counter
     new_rules = []
 
@@ -200,7 +200,7 @@ def main():
 
     # get the rules and separate them
     original_rules = get_cfg(sys.argv[1])
-    new_rules = add_tags(original_rules)
+    new_rules = add_X(original_rules)
     sep_rules = separate_POS(new_rules)
 
     # perform algorithm
