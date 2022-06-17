@@ -119,7 +119,7 @@ def predictor(state, sep_rules, chart):
 
     # enqueues possible states needed to complete state passed in
     for rule in non_POS:
-        if curr_rule[curr_rule.index(".")+1] == rule:
+        if curr_rule[curr_rule.index(".")+1] == rule[0]:
             temp_rule = rule.copy()
             temp_rule.insert(1,".")
 
@@ -131,6 +131,8 @@ def scanner(state, sep_rules, chart, words):
     # unpack state
     curr_rule, curr_span, curr_tree = state
     i, j = curr_span
+    
+    if len(words) <= j: return
 
     # get POS rules
     POS = sep_rules[0]
@@ -153,12 +155,12 @@ def completer(state, sep_rules, chart):
 
     # check for states to 'complete'
     for state in chart[j]:
-        if incomplete(state) and state[0][state[0].index['.']+1] == curr_rule[0]:
+        if incomplete(state) and state[0][state[0].index('.')+1] == curr_rule[0]:
             # move period tracking progress up one
-            new_rule = state[0][:state[0].index['.']] + [state[0][state[0].index['.']+1], '.'] + state[0][state[0].index['.']+2:]
+            new_rule = state[0][:state[0].index('.')] + [state[0][state[0].index('.')+1], '.'] + state[0][state[0].index('.')+2:]
 
             # edit tree to include progress from completed state
-            new_tree = Tree(state[2].label, deepcopy(state[2].children) + [deepcopy(curr_tree)])
+            new_tree = Tree(state[2].label(), deepcopy(list(state[2])) + [deepcopy(curr_tree)])
 
             # build and add state
             temp_state = (new_rule, (state[1][0], k), new_tree)
@@ -183,15 +185,15 @@ def earley(words, sep_rules):
 
     enqueue((["Gamma", ".", "S"], (0, 0), Tree("Gamma",[])), chart, 0)
 
-    for i in range(len(words)):
+    for i in range(len(words) + 1):
         index = 0
 
         while index < len(chart[i]):
             state = chart[i][index]
             
-            if incomplete(state) and state[0][state[0].index('.')+1] not in map(lambda x: x[0], sep_rules[0]):
+            if incomplete(state) and state[0][state[0].index('.')+1] not in list(map(lambda x: x[0], sep_rules[0])):
                 predictor(state, sep_rules, chart)
-            elif incomplete(state) and state[0][state[0].index('.')+1] in map(lambda x: x[0], sep_rules[0]):
+            elif incomplete(state) and state[0][state[0].index('.')+1] in list(map(lambda x: x[0], sep_rules[0])):
                 scanner(state, sep_rules, chart, words)
             else:
                 completer(state, sep_rules, chart)
@@ -212,16 +214,16 @@ def remove_X(tree):
     new_children = []
     
     # modify children as needed
-    if tree.children:
-        for child in tree.children:
-            if isinstance(child, Tree) and child.label[0] == 'X':
+    if list(tree):
+        for child in tree:
+            if isinstance(child, Tree) and child.label()[0] == 'X':
                 # already at lowest level, no need to recurse
-                new_children.append(child.children[0])
+                new_children.append(child[0])
             else:
                 # recurse to lower levels
                 new_children.append(remove_X(child))
     
-    return Tree(tree.label, new_children)
+    return Tree(tree.label(), new_children)
 
 
 # prints trees passed in as a list or display via another method
@@ -241,7 +243,7 @@ def main():
     # get the rules and separate them
     original_rules = get_cfg(sys.argv[1])
     new_rules = add_X(original_rules)
-    sep_rules = separate_POS(new_rules)
+    sep_rules = separate_POS(new_rules)  
 
     # perform algorithm
     mod_trees = earley(sys.argv[2].split(), sep_rules)
