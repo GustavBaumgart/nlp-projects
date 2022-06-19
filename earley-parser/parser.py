@@ -191,10 +191,14 @@ def earley(words, sep_rules):
         while index < len(chart[i]):
             state = chart[i][index]
             
-            if incomplete(state) and state[0][state[0].index('.')+1] not in list(map(lambda x: x[0], sep_rules[0])):
-                predictor(state, sep_rules, chart)
-            elif incomplete(state) and state[0][state[0].index('.')+1] in list(map(lambda x: x[0], sep_rules[0])):
-                scanner(state, sep_rules, chart, words)
+            if incomplete(state):
+                # both of these could be executed in order to expand a category
+                # that is both POS and non POS
+                if state[0][state[0].index('.')+1] in list(map(lambda x: x[0], sep_rules[1])):
+                    predictor(state, sep_rules, chart)
+                
+                if state[0][state[0].index('.')+1] in list(map(lambda x: x[0], sep_rules[0])):
+                    scanner(state, sep_rules, chart, words)
             else:
                 completer(state, sep_rules, chart)
 
